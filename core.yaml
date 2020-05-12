@@ -63,6 +63,7 @@
         - snapd
         - uuid
         - xclip
+        - terminator
       when: not is_mac
 
     - name: Add /snap/bin to PATH
@@ -70,6 +71,7 @@
         path: ~/.bashrc
         line: export PATH=$PATH:/snap/bin
       when: not is_mac
+      tags: snap
 
     - name: Get installed package list
       package_facts: {}

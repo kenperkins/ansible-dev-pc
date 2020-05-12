@@ -16,8 +16,8 @@
         marker: "### {mark} Ansible managed: Bash aliases (common)"
         block: |
           alias diff='colordiff'
-          alias dir='ls -lA'
-          alias ll='ls -l'
+          # alias dir='ls -lA'
+          # alias ll='ls -l'
 
           alias ..='cd ..'
           alias ...='cd ../..'

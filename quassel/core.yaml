@@ -1,0 +1,40 @@
+- name: Quassel
+  hosts: 127.0.0.1
+  connection: local
+
+  vars:
+    is_mac: "{{ ansible_distribution == 'MacOSX' }}"
+
+  tasks:
+    - set_fact: is_wsl={{ not is_mac and lookup('file', '/proc/version') is regex('(M|m)icrosoft') }}
+
+    # Linux
+    - name: Add Quassle APT package key
+      become: yes
+      apt_key:
+        url: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xa0d47ab4e99ff9f9c0ea949a26f4ef8440618b66
+      when: not is_mac and not is_wsl
+  
+    - name: Add Quassel APT package repository
+      become: yes
+      apt_repository:
+        repo: deb [arch=amd64] http://ppa.launchpad.net/mamarley/quassel/ubuntu stable main
+        filename: quassel
+        update_cache: no
+      register: apt_repository
+      when: not is_mac and not is_wsl
+
+    - name: Update APT package list
+      become: yes
+      apt:
+        update_cache: yes
+      when: apt_repository.changed
+      register: apt_update
+      retries: 5
+      until: apt_update is success
+
+    - name: Install Quassel
+      become: yes
+      apt:
+        package: quassel
+      when: not is_mac and not is_wsl

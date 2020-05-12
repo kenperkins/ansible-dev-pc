@@ -17,44 +17,15 @@
         package: gnupg-agent
       when: not is_mac
 
-    - name: Add Docker APT package key
-      become: yes
-      apt_key:
-        url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
-      when: not is_mac
-
-    - name: Add Docker APT package repository
-      become: yes
-      apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ docker_distro_release }} stable
-        filename: docker
-        update_cache: no
-      register: apt_repository
-      when: not is_mac
-
-    - name: Update APT package list
-      become: yes
-      apt:
-        update_cache: yes
-      when: apt_repository.changed
-      register: apt_update
-      retries: 5
-      until: apt_update is success
-
     - name: Install Docker CLI components (Linux)
       become: yes
       apt:
+        update_cache: yes
         package: "{{ item }}"
       loop:
-        - docker-ce-cli
+        - docker.io
         - docker-compose
       when: not is_mac
-
-    - name: Install Docker engine (Linux)
-      become: yes
-      apt:
-        package: docker-ce
-      when: not is_mac and not is_wsl
 
     - name: Enable Docker engine for current user
       become: yes

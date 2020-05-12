@@ -5,6 +5,7 @@
   vars:
     go_version: 1.14.2
     is_mac: "{{ ansible_distribution == 'MacOSX' }}"
+    dev_dir: "dev"
 
   tasks:
     # Linux
@@ -52,13 +53,13 @@
 
     - name: Create package/source folder
       file:
-        path: ~/dev/go
+        path: ~/{{ dev_dir }}/go
         state: directory
 
     - name: Clean $GOPATH/pkg
       become: yes
       file:
-        path: ~/dev/go/pkg
+        path: ~/{{ dev_dir }}/go/pkg
         state: absent
       when: go_download_linux.changed or go_download_mac.changed
 
@@ -67,8 +68,8 @@
         path: ~/.bashrc
         marker: "### {mark} Ansible managed: Go support"
         block: |
-          export PATH=$PATH:$HOME/dev/go/bin
-          export GOPATH=$HOME/dev/go
+          export PATH=$PATH:$HOME/{{ dev_dir }}/go/bin
+          export GOPATH=$HOME/{{ dev_dir }}/go
 
           function switchgo() {
             version=$1
